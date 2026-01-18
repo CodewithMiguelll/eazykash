@@ -31,7 +31,6 @@ const interSemiBold = Inter({
 export default function Home() {
   return (
     <>
-    <h1 className={`${interSemiBold.className} text-2xl font-medium`}>Welcome To EazyKash</h1>
     </>
   );
 }

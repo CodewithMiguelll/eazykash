@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Navbar from "@/components/header";
+import Header from "@/components/header";
 
 
 export const metadata: Metadata = {
@@ -13,12 +15,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    
     <html lang="en">
+      <>
+      <Header/>
       <body suppressHydrationWarning={true}
         className={`antialiased`}
       >
         {children}
       </body>
-    </html>
+      </>
+      
+    </html>   
   );
 }
