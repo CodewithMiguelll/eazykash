@@ -5,12 +5,11 @@ import { useState } from "react";
 import { Inter, Sora } from "next/font/google";
 import { Menu, XIcon } from "lucide-react";
 import { Button } from "./ui/button";
-import { motion } from "framer-motion";
 
 const inter = Inter({
   subsets: ["latin"],
   weight: ["600"],
-  style: "normal",
+  style: "italic",
 });
 
 const sora = Sora({

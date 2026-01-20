@@ -1,5 +1,7 @@
-"use client"
-import {Sora, Inter} from 'next/font/google'
+"use client";
+import { Sora, Inter } from "next/font/google";
+import Image from "next/image";
+import CreditCards from "@/assets/credit-cards.png"
 
 /*FONT CONFIGURATIONS
 
@@ -27,17 +29,38 @@ const interSemiBold = Inter({
   style: "normal",
 });
 
-
 export default function Home() {
   return (
     <>
-    <main className='flex flex-col items-center justify-center p-16'>
-{/* Hero Section */}
-      <section className='text-center mb-20'>
-        <h1 className={`${interSemiBold.className} text-5xl mb-4`}>Welcome to EazyKash</h1>
-        <p className={`${sora.className} text-lg text-gray-600`}>Finances made easy.</p>
-      </section>
-    </main>
+      <main className="flex flex-col px-6 max-w-7xl mx-auto">
+        {/* HERO SECTION */}
+        <section className="mt-28">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="flex flex-col justify-center md:w-1/2">
+              <h1
+          className={`${interMedium.className} text-xl md:text-3xl mb-2 leading-tight`}
+              >
+          Fast, Secure Payments from the UK. <br />
+          Locally and Across Africa.
+              </h1>
+              <p className={`${sora.className} text-base md:text-xl`}>
+          Send money across the UK or to Africa in minutes, with low fees
+          and full transparency.
+              </p>
+            </div>
+
+            <div className="md:w-1/2">
+              <Image
+          src={CreditCards}
+          alt="Hero Image"
+          width={500}
+          height={500}
+          className="h-auto"
+              />
+            </div>
+          </div>
+        </section>
+      </main>
     </>
   );
 }
