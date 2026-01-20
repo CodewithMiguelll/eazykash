@@ -31,6 +31,13 @@ const interSemiBold = Inter({
 export default function Home() {
   return (
     <>
+    <main className='flex flex-col items-center justify-center p-16'>
+{/* Hero Section */}
+      <section className='text-center mb-20'>
+        <h1 className={`${interSemiBold.className} text-5xl mb-4`}>Welcome to EazyKash</h1>
+        <p className={`${sora.className} text-lg text-gray-600`}>Finances made easy.</p>
+      </section>
+    </main>
     </>
   );
 }
