@@ -2,6 +2,8 @@
 import { Sora, Inter } from "next/font/google";
 import Image from "next/image";
 import CreditCards from "@/assets/credit-cards.png"
+import PersonBlob from "@/assets/person-blob.png"
+import { Button } from "@/components/ui/button";
 
 /*FONT CONFIGURATIONS
 
@@ -38,24 +40,59 @@ export default function Home() {
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="flex flex-col justify-center md:w-1/2">
               <h1
-          className={`${interMedium.className} text-xl md:text-3xl mb-2 leading-tight`}
+                className={`${interMedium.className} text-xl md:text-3xl mb-2 leading-tight`}
               >
-          Fast, Secure Payments from the UK. <br />
-          Locally and Across Africa.
+                Fast, Secure Payments from the UK. <br />
+                Locally and Across Africa.
               </h1>
               <p className={`${sora.className} text-base md:text-xl`}>
-          Send money across the UK or to Africa in minutes, with low fees
-          and full transparency.
+                Send money across the UK or to Africa in minutes, with low fees
+                and full transparency.
               </p>
+              <Button className="bg-[#0f7a5c] text-[#f9faf9] md:hover:bg-[#105f49] md:hover:cursor-pointer mt-4 w-fit">
+                Get Started
+              </Button>
             </div>
 
             <div className="md:w-1/2">
               <Image
-          src={CreditCards}
-          alt="Hero Image"
-          width={500}
-          height={500}
-          className="h-auto"
+                src={CreditCards}
+                alt="Hero Image"
+                width={500}
+                height={500}
+                className="h-auto"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* ABOUT SECTION */}
+        <section className="mt-14 mb-16">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="flex flex-col justify-center md:w-1/2">
+              <h1
+                className={`${interSemiBold.className} text-xl md:text-3xl mb-2 leading-tight`}
+              >
+                Easily Transfer Funds Within The UK
+              </h1>
+              <p className={`${sora.className} text-base md:text-xl`}>
+                Transfer money within the UK using multiple transfer types and
+                supported methods, from bank transfers to wallets. Enjoy fast
+                processing, a smooth flow, and an experience that’s easy to use
+                from start to finish.
+              </p>
+              <Button className="bg-[#0f7a5c] text-[#f9faf9] md:hover:bg-[#105f49] md:hover:cursor-pointer mt-4 w-fit">
+                Learn More
+              </Button>
+            </div>
+
+            <div className="md:w-1/2">
+              <Image
+                src={PersonBlob}
+                alt="Hero Image"
+                width={450}
+                height={450}
+                className="h-auto"
               />
             </div>
           </div>
