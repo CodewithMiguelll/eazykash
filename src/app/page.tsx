@@ -3,6 +3,7 @@ import { Sora, Inter } from "next/font/google";
 import Image from "next/image";
 import CreditCards from "@/assets/credit-cards.png"
 import PersonBlob from "@/assets/person-blob.png"
+import CashTransfer from "@/assets/cash-transfer.png"
 import { Button } from "@/components/ui/button";
 
 /*FONT CONFIGURATIONS
@@ -34,9 +35,9 @@ const interSemiBold = Inter({
 export default function Home() {
   return (
     <>
-      <main className="flex flex-col px-6 max-w-7xl mx-auto">
+      <main className="flex flex-col px-9 max-w-7xl mx-auto">
         {/* HERO SECTION */}
-        <section className="mt-28">
+        <section className="mt-20">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="flex flex-col justify-center md:w-1/2">
               <h1
@@ -89,7 +90,7 @@ export default function Home() {
             <div className="md:w-1/2">
               <Image
                 src={PersonBlob}
-                alt="Hero Image"
+                alt="A person holding a phone with a smile on their face"
                 width={450}
                 height={450}
                 className="h-auto"
@@ -97,6 +98,41 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* Payments From UK to Africa */}
+        <section className="mt-14 mb-16">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="md:w-1/2">
+              <Image
+                src={CashTransfer}
+                alt="POS Cash Transfer"
+                width={450}
+                height={450}
+                className="h-auto"
+              />
+            </div>
+            <div className="flex flex-col justify-center md:w-1/2">
+              <h1
+                className={`${interSemiBold.className} text-xl md:text-3xl mb-2 leading-tight`}
+              >
+                Cross-Border Payments from the UK to Africa
+              </h1>
+              <p className={`${sora.className} text-base md:text-xl`}>
+                UK to Africa transfers made simple. Send money through supported
+                African corridors with clear fees, competitive speeds, and full
+                currency transparency—so you always know what’s sent and what’s
+                received. No friction. No confusion. Just smooth sending and
+                easy access for recipients.
+              </p>
+              <Button className="bg-[#0f7a5c] text-[#f9faf9] md:hover:bg-[#105f49] md:hover:cursor-pointer mt-4 w-fit">
+                Learn More
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* How It Works */}
+        
       </main>
     </>
   );
