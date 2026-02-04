@@ -35,6 +35,7 @@ const interSemiBold = Inter({
 export default function Home() {
   return (
     <>
+    // TODO: Enhance Hero Section with background graphics, CTAs and animations
       <main className="flex flex-col px-9 max-w-7xl mx-auto">
         {/* HERO SECTION */}
         <section className="mt-20">
