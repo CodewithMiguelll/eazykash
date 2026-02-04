@@ -132,7 +132,9 @@ export default function Home() {
         </section>
 
         {/* How It Works */}
-        
+        <section className="mt-14 mb-16">
+          <h1 className={`${interSemiBold.className} text-2xl md:text-3xl mb-4 text-center`}>How It Works</h1>
+        </section>
       </main>
     </>
   );
