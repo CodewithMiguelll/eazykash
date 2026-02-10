@@ -5,6 +5,17 @@ import CreditCards from "@/assets/credit-cards.png";
 import PersonBlob from "@/assets/person-blob.png";
 import CashTransfer from "@/assets/cash-transfer.png";
 import { Button } from "@/components/ui/button";
+import { IconBolt, IconBuildingBank, IconCashBanknote, IconHeadphones, IconLock, IconReceipt, IconWallet } from "@tabler/icons-react";
+import { IconProps } from "@tabler/icons-react";
+
+
+type Feature = {
+  icon: React.ForwardRefExoticComponent<
+    IconProps & React.RefAttributes<SVGSVGElement>
+  >;
+  title: string;
+  description: string;
+};
 
 /* --- FONT CONFIGURATION --- */
 const sora = Sora({
@@ -42,9 +53,51 @@ const steps = [
   {
     idx: 4,
     title: "Send & Track",
-    description: "That's it, your transfer is on the way.",
+    description: "That's it! Your transfer is on the way."
   },
 ];
+
+
+const features = [
+  {
+    icon: IconBolt,
+    title: "Fast Transfers",
+    description:
+      "Move money fast, locally or across borders, without waiting around.",
+  },
+  {
+    icon: IconBuildingBank,
+    title: "Multiple Payment Methods",
+    description:
+      "Pay with banks, wallets, or cards flexibly so sending is never a problem.",
+  },
+  {
+    icon:IconWallet,
+    title: "Transparent Fees & Currency",
+    description:
+      "See fees upfront and know exactly what your recipient gets—no surprises.",
+  },
+  {
+    icon: IconLock ,
+    title: "Secure & Verified",
+    description:
+      "Every transaction is protected with industry-leading security and verification.",
+  },
+  {
+    icon: IconReceipt ,
+    title: "Track and Manage Transfers",
+    description:
+      "Follow your money every step of the way, from send to receive.",
+  },
+
+  {
+    icon: IconHeadphones ,
+    title: "24/7 Support",
+    description: "Get help anytime with our dedicated support team.",
+  },
+];
+
+
 
 export default function Home() {
   return (
@@ -93,9 +146,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-
         {/* --- SECTION DIVIDER (Optional visual break) --- */}
-
         {/* ABOUT SECTION */}
         <section className="py-16 md:py-24">
           <div className="flex flex-col md:flex-row items-center gap-12 lg:gap-24">
@@ -128,7 +179,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
         {/* PAYMENTS FROM UK TO AFRICA */}
         <section className="py-16 md:py-24">
           <div className="flex flex-col md:flex-row items-center gap-12 lg:gap-24">
@@ -164,7 +214,7 @@ export default function Home() {
         {/* HOW IT WORKS */}
         <section className="py-16 md:py-24 mb-12">
           <div className="text-center mb-12">
-            <h2 className="font-heading font-bold text-3xl md:text-5xl mb-4">
+            <h2 className="font-bold text-3xl md:text-5xl mb-4">
               How It Works
             </h2>
             <p className="text-slate-600">Start sending money in minutes</p>
@@ -183,14 +233,58 @@ export default function Home() {
                   </span>
                 </div>
 
-                <h3 className={`${interMedium.className} font-heading font-semibold text-white text-xl mb-3`}>
+                <h3
+                  className={`${interMedium.className} font-heading font-semibold text-white text-xl mb-3`}
+                >
                   {step.title}
                 </h3>
-                <p className={`${sora.className} text-slate-100/90 text-sm leading-relaxed`}>
+                <p
+                  className={`${sora.className} text-slate-100/90 text-sm leading-relaxed`}
+                >
                   {step.description}
                 </p>
               </div>
             ))}
+          </div>
+        </section>
+        {/* FEATURES SECTION */}
+        <section className="py-16 md:py-24 mb-12">
+          <div className="text-center mb-12">
+            <h2 className="font-bold text-3xl md:text-5xl mb-4">
+              Core Features
+            </h2>
+            <p className="text-slate-600 mb-10">
+              All-in-one solution for cross-border payments
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {features.map((feature, index) => {
+                const Icon = feature.icon;
+                const gridClass = index === 4 ? "lg:col-start-2" : "";
+
+                return (
+                  <div
+                    key={feature.title}
+                    className={`bg-[#0F7A5C] p-8 rounded-2xl text-center shadow-lg flex flex-col items-center hover:-translate-y-1 transition-transform duration-300 ${gridClass}`}
+                  >
+                    <div className="bg-[#159672] w-16 h-16 rounded-full flex items-center justify-center mb-6">
+                      <Icon size={28} className="text-white" />
+                    </div>
+
+                    <h3
+                      className={`${interMedium.className} font-heading font-semibold text-white text-xl mb-3`}
+                    >
+                      {feature.title}
+                    </h3>
+
+                    <p
+                      className={`${sora.className} text-slate-100/90 text-sm leading-relaxed`}
+                    >
+                      {feature.description}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </section>
       </div>
