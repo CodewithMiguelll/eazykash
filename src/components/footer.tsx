@@ -48,6 +48,29 @@ const footerLinks = [
   },
 ];
 
+const socialLinks = [
+  {
+    icon: IconBrandTwitter,
+    href: "https://twitter.com/Chikaimaaa",
+    label: "Twitter",
+  },
+  {
+    icon: IconBrandInstagram,
+    href: "https://instagram.com/chikaimaaa_",
+    label: "Instagram",
+  },
+  {
+    icon: IconBrandLinkedin,
+    href: "https://linkedin.com/in/chikaima-uwakwe",
+    label: "LinkedIn",
+  },
+  {
+    icon: IconBrandFacebook,
+    href: "#",
+    label: "Facebook",
+  },
+];
+
 /* --- ANIMATION VARIANTS --- */
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -99,19 +122,15 @@ const Footer = () => {
 
             {/* Social Icons */}
             <div className="flex gap-4">
-              {[
-                IconBrandTwitter,
-                IconBrandInstagram,
-                IconBrandLinkedin,
-                IconBrandFacebook,
-              ].map((Icon, i) => (
+              {socialLinks.map((social, i) => (
                 <a
                   key={i}
-                  href="#"
+                  href={social.href}
+                  target="_blank"
                   className="bg-[#159672] p-2 rounded-full hover:bg-white hover:text-[#0f7a5c] transition-colors duration-300"
-                  aria-label="Social Link"
+                  aria-label={social.label}
                 >
-                  <Icon size={20} />
+                  <social.icon size={20} />
                 </a>
               ))}
             </div>
