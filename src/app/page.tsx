@@ -287,6 +287,11 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* Why EazyKash */}
+        <section>
+          
+        </section>
       </div>
     </main>
   );
