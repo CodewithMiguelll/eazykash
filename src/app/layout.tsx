@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/header";
 import Header from "@/components/header";
+import Footer from "@/components/footer";
 
 
 export const metadata: Metadata = {
@@ -19,6 +20,7 @@ export default function RootLayout({
       <body suppressHydrationWarning={true} className={`antialiased`}>
         <Header />
         {children}
+        <Footer/>
       </body>
     </html>
   );
