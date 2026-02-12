@@ -1,13 +1,15 @@
 "use client";
-import { Sora, Inter } from "next/font/google";
+
 import Image from "next/image";
 import CreditCards from "@/assets/credit-cards.png";
 import PersonBlob from "@/assets/person-blob.png";
 import CashTransfer from "@/assets/cash-transfer.png";
+import PictureMan from "@/assets/picture-man.png";
 import { Button } from "@/components/ui/button";
-import { IconBolt, IconBuildingBank, IconCashBanknote, IconHeadphones, IconLock, IconReceipt, IconWallet } from "@tabler/icons-react";
+import { IconBolt, IconBuildingBank, IconHeadphones, IconLock, IconReceipt, IconWallet } from "@tabler/icons-react";
 import { IconProps } from "@tabler/icons-react";
-
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
 
 type Feature = {
   icon: React.ForwardRefExoticComponent<
@@ -17,22 +19,13 @@ type Feature = {
   description: string;
 };
 
-/* --- FONT CONFIGURATION --- */
-const sora = Sora({
-  subsets: ["latin"],
-  variable: "--font-sora",
-});
+type Testimonial = {
+  name: string;
+  location: string;
+  quote: string;
+};
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
 
-const interMedium = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter-medium",
-  weight: "500",
-});
 
 const steps = [
   {
@@ -97,13 +90,67 @@ const features = [
   },
 ];
 
+const responsive = {
+  superLargeDesktop: {
+    breakpoint: { max: 4000, min: 3000 },
+    items: 5,
+  },
+  desktop: {
+    breakpoint: { max: 3000, min: 1024 },
+    items: 3, // Shows 3 cards on desktop
+  },
+  tablet: {
+    breakpoint: { max: 1024, min: 464 },
+    items: 2, // Shows 2 cards on tablet
+  },
+  mobile: {
+    breakpoint: { max: 464, min: 0 },
+    items: 1, // Shows 1 card on mobile
+  },
+};
+
+const testimonials =[{
+  name: "Amina S.",
+location: "London, UK",
+quote:"EazyKash made sending money to my family in Nigeria so easy and affordable. I love the transparency and speed!"
+},
+{
+name: "David M.",
+location: "Manchester, UK",
+quote:"I've been using EazyKash for months now. The fees are low and the process is so simple. Highly recommend!",
+},
+{
+  name: "Mohammed Epsilon",
+location: "Lagos, Nigeria",
+quote:"As a recipient, I can confirm that EazyKash is reliable and fast. I receive my funds without any issues. Great service!"
+},
+{
+name: "Sarah K.",
+location: "Birmingham, UK",
+quote:"EazyKash's customer support is fantastic. They helped me through a transfer issue quickly and professionally. I'm very impressed!"
+},
+{
+name: "James T.",
+location: "Glasgow, UK",
+quote:"I needed to send money to Africa urgently, and EazyKash delivered. The transfer was completed in minutes, and the fees were very reasonable."
+},
+{
+name: "Nzinga A.",
+location: "Nairobi, Kenya",
+quote:"EazyKash has made it so much easier for me to receive money from my family in the UK. The process is smooth, and I always know when the money is on its way."
+},
+{
+name: "Emily R.",
+location: "Dakar, Senegal",
+quote:"I appreciate how transparent EazyKash is about fees and exchange rates. It gives me confidence that I'm getting a fair deal when I send money to Africa."
+}
+]
+
 
 
 export default function Home() {
   return (
-    <main
-      className={`${sora.variable} ${inter.variable} font-sans text-slate-800`}
-    >
+    <main className={` text-slate-800`}>
       {/* WRAPPER: 
          Added overflow-hidden to prevent horizontal scrollbars on mobile 
          if animations pull things off-screen.
@@ -121,7 +168,7 @@ export default function Home() {
                   Locally and Across Africa.
                 </span>
               </h1>
-              <p className="text-lg md:text-xl text-slate-600 mb-8 leading-relaxed max-w-lg mx-auto md:mx-0">
+              <p className="text-lg md:text-xl font-sora text-slate-600 mb-8 leading-relaxed max-w-lg mx-auto md:mx-0">
                 Send money across the UK or to Africa in minutes, with low fees
                 and full transparency.
               </p>
@@ -146,7 +193,8 @@ export default function Home() {
             </div>
           </div>
         </section>
-        {/* --- SECTION DIVIDER (Optional visual break) --- */}
+
+        {/* --- SECTION DIVIDER --- */}
         {/* ABOUT SECTION */}
         <section className="py-16 md:py-24">
           <div className="flex flex-col md:flex-row items-center gap-12 lg:gap-24">
@@ -155,7 +203,7 @@ export default function Home() {
               <h2 className="font-heading font-bold text-3xl md:text-4xl mb-4 leading-tight">
                 Easily Transfer Funds Within The UK
               </h2>
-              <p className="text-base md:text-lg text-slate-600 leading-relaxed">
+              <p className="text-base font-sora md:text-lg text-slate-600 leading-relaxed">
                 Transfer money within the UK using multiple transfer types and
                 supported methods, from bank transfers to wallets. Enjoy fast
                 processing, a smooth flow, and an experience that’s easy to use
@@ -195,7 +243,7 @@ export default function Home() {
               <h2 className="font-heading font-bold text-3xl md:text-4xl mb-4 leading-tight">
                 Cross-Border Payments from the UK to Africa
               </h2>
-              <p className="text-base md:text-lg text-slate-600 leading-relaxed">
+              <p className="text-base font-sora md:text-lg text-slate-600 leading-relaxed">
                 UK to Africa transfers made simple. Send money through supported
                 African corridors with clear fees, competitive speeds, and full
                 currency transparency—so you always know what’s sent and what’s
@@ -214,7 +262,7 @@ export default function Home() {
         {/* HOW IT WORKS */}
         <section className="py-16 md:py-24 mb-12">
           <div className="text-center mb-12">
-            <h2 className="font-bold text-3xl md:text-5xl mb-4">
+            <h2 className="font-bold font-heading text-3xl md:text-5xl mb-4">
               How It Works
             </h2>
             <p className="text-slate-600">Start sending money in minutes</p>
@@ -234,12 +282,12 @@ export default function Home() {
                 </div>
 
                 <h3
-                  className={`${interMedium.className} font-heading font-semibold text-white text-xl mb-3`}
+                  className={` font-heading font-semibold text-white text-xl mb-3`}
                 >
                   {step.title}
                 </h3>
                 <p
-                  className={`${sora.className} text-slate-100/90 text-sm leading-relaxed`}
+                  className={`text-slate-100/90 font-sora text-sm leading-relaxed`}
                 >
                   {step.description}
                 </p>
@@ -250,7 +298,7 @@ export default function Home() {
         {/* FEATURES SECTION */}
         <section className="py-16 md:py-24 mb-12">
           <div className="text-center mb-12">
-            <h2 className="font-bold text-3xl md:text-5xl mb-4">
+            <h2 className="font-bold font-heading text-3xl md:text-5xl mb-4">
               Core Features
             </h2>
             <p className="text-slate-600 mb-10">
@@ -271,13 +319,13 @@ export default function Home() {
                     </div>
 
                     <h3
-                      className={`${interMedium.className} font-heading font-semibold text-white text-xl mb-3`}
+                      className={` font-heading font-semibold text-white text-xl mb-3`}
                     >
                       {feature.title}
                     </h3>
 
                     <p
-                      className={`${sora.className} text-slate-100/90 text-sm leading-relaxed`}
+                      className={`text-slate-100/90 font-sora text-sm leading-relaxed`}
                     >
                       {feature.description}
                     </p>
@@ -289,8 +337,80 @@ export default function Home() {
         </section>
 
         {/* Why EazyKash */}
-        <section>
-          
+        <section className="py-16 md:py-24">
+          <div className="flex flex-col md:flex-row items-center gap-12 lg:gap-24">
+            <div className="md:w-1/2 w-full">
+              <Image
+                src={PictureMan}
+                alt="Man smiling with phone"
+                className="w-full max-w-75 md:max-w-112.5 mx-auto h-auto"
+              />
+            </div>
+
+            {/* Text */}
+            <div className="flex flex-col justify-center md:w-1/2">
+              <h2 className="font-heading font-bold text-3xl md:text-4xl mb-4 leading-tight">
+                Why EazyKash?
+              </h2>
+              <p className="text-base font-sora md:text-lg text-slate-600 leading-relaxed">
+                Users choose us because we make money transfers fast, secure,
+                and stress-free. With transparent fees, real-time tracking, and
+                a simple, intuitive experience, sending and receiving money has
+                never been easier—or more reliable. Trust and clarity aren’t
+                optional here—they’re built into every transfer.
+              </p>
+              <Button
+                variant="outline"
+                className="mt-6 w-fit border-[#0f7a5c] text-[#0f7a5c] md:hover:bg-[#0f7a5c] md:hover:text-white"
+              >
+                Get Started
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* TESTIMONIALS */}
+        <section className="py-16 md:py-24 mb-12">
+          <div className="text-center mb-12">
+            <h2 className="font-bold font-heading text-3xl md:text-5xl mb-4">
+              Trusted by Users Across The UK and Africa
+            </h2>
+            <p className="text-slate-600 mb-10">
+              Hear from our satisfied customers who rely on EazyKash for their
+              cross-border payment needs. Join the growing community of EazyKash
+              users who trust us to connect them with their loved ones and
+              business partners across the UK and Africa.
+            </p>
+
+            <Carousel
+              responsive={responsive}
+              infinite={true}
+              autoPlay={true}
+              autoPlaySpeed={5000}
+              keyBoardControl={true}
+              containerClass="carousel-container"
+              dotListClass="custom-dot-list"
+              itemClass="carousel-item-padding-40-px"
+            >
+              {testimonials.map((testimonial, index) => (
+                <div
+                  key={index}
+                  className="bg-[#0F7A5C] p-10 h-full rounded-2xl text-center shadow-lg flex flex-col items-center justify-between mx-4"
+                >
+                  <p className="text-slate-100/90 font-sora text-sm leading-relaxed mb-6">
+                    "{testimonial.quote}"
+                  </p>
+                  <h3 className="font-heading font-semibold text-white text-lg">
+      
+                    {testimonial.name}
+                  </h3>
+                  <span className="text-slate-400 text-sm">
+                    {testimonial.location}
+                  </span>
+                </div>
+              ))}
+            </Carousel>
+          </div>
         </section>
       </div>
     </main>
