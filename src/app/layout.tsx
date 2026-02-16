@@ -1,31 +1,59 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Sora, Inter } from "next/font/google";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 
 /* --- FONT CONFIGURATION --- */
-
+// Consolidating Inter to include the Medium weight in one variable
 const sora = Sora({
   subsets: ["latin"],
   variable: "--font-sora",
+  display: "swap",
 });
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  weight: ["400", "500", "600"], // Added 500 for your 'Medium' needs
+  display: "swap",
 });
 
-const interMedium = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter-medium",
-  weight: "500",
-});
-
-
+/* --- METADATA & SEO --- */
 export const metadata: Metadata = {
-  title: "EazyKash",
-  description: "Finances made easy.",
+  title: {
+    default: "EazyKash | Stop Paying to Pay. Start Sending.",
+    template: "%s | EazyKash",
+  },
+  description:
+    "Fast, secure, and transparent payments from the UK to Africa with zero hidden fees.",
+  keywords: [
+    "Fintech",
+    "Money Transfer",
+    "UK to Africa",
+    "EazyKash",
+    "Remittance",
+  ],
+  authors: [{ name: "Chikaima Uwakwe" }],
+  openGraph: {
+    title: "EazyKash",
+    description: "The easiest way to send money to Africa.",
+    url: "https://", // Actual domain coming soon
+    siteName: "EazyKash",
+    locale: "en_GB",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "EazyKash",
+    description: "Finances made easy.",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#ffffff", // Match your primary brand background
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -34,10 +62,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body suppressHydrationWarning={true} className={`${sora.variable} ${inter.variable} antialiased`}>
+    <html lang="en" className="scroll-smooth">
+      <body
+        suppressHydrationWarning={true}
+        className={`${sora.variable} ${inter.variable} font-inter antialiased min-h-screen flex flex-col`}
+      >
         <Header />
-        {children}
+
+        {/* Added <main> for accessibility and flex-grow to push footer down */}
+        <main className="grow">{children}</main>
+
         <Footer />
       </body>
     </html>
