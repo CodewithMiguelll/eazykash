@@ -81,20 +81,20 @@ const Header = () => {
           ) : user ? (
             <>
               <Link href="/payments">
-                <Button className="bg-[#0f7a5c] text-[#f9faf9] hover:bg-[#105f49] px-8">
+                <button className="bg-[#0f7a5c] text-[#f9faf9] hover:bg-[#105f49] p-2.5 rounded-md text-sm font-medium transition-colors md:hover:cursor-pointer">
                   Send Money
-                </Button>
+                </button>
               </Link>
               <button
                 onClick={handleLogout}
-                className="text-sm font-medium text-gray-500 hover:text-red-600 transition-colors"
+                className="text-sm font-medium p-2.5 text-red-600 bg-red-200 md:hover:bg-red-600 md:hover:text-white transition-colors rounded-md md:hover:cursor-pointer"
               >
                 Logout
               </button>
             </>
           ) : (
             <>
-              <Link href="/login">
+              <Link href="/auth/login">
                 <Button
                   variant="outline"
                   className="bg-[#9fd3c7] text-[#0f7a5c] hover:bg-[#52b9a1] hover:text-white"
@@ -102,7 +102,7 @@ const Header = () => {
                   Log In
                 </Button>
               </Link>
-              <Link href="/signup">
+              <Link href="/auth/signup">
                 <Button className="bg-[#0f7a5c] text-white hover:bg-[#105f49]">
                   Sign Up
                 </Button>
@@ -134,11 +134,19 @@ const Header = () => {
           ))}
           <div className="flex flex-col gap-3 pt-4 border-t">
             {user ? (
-              <Link href="/payments" onClick={() => setIsOpen(false)}>
-                <Button className="w-full bg-[#0f7a5c] py-6 text-lg">
-                  Send Money
-                </Button>
-              </Link>
+              <>
+                <Link href="/payments" onClick={() => setIsOpen(false)}>
+                  <Button className="w-full bg-[#0f7a5c] py-6 text-lg">
+                    Send Money
+                  </Button>
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="text-base font-medium p-2.5 text-red-600 bg-red-200 md:hover:bg-red-600 md:hover:text-white transition-colors rounded-md md:hover:cursor-pointer"
+                >
+                  Logout
+                </button>
+              </>
             ) : (
               <>
                 <Link href="/login" onClick={() => setIsOpen(false)}>

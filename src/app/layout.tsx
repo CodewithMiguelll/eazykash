@@ -3,6 +3,7 @@ import "./globals.css";
 import { Sora, Inter } from "next/font/google";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import Providers from "@/components/providers";
 
 /* --- FONT CONFIGURATION --- */
 // Consolidating Inter to include the Medium weight in one variable
@@ -67,12 +68,14 @@ export default function RootLayout({
         suppressHydrationWarning={true}
         className={`${sora.variable} ${inter.variable} font-inter antialiased min-h-screen flex flex-col`}
       >
-        <Header />
+        <Providers>
+          <Header />
 
-        {/* Added <main> for accessibility and flex-grow to push footer down */}
-        <main className="grow">{children}</main>
+          {/* Added <main> for accessibility and flex-grow to push footer down */}
+          <main className="grow">{children}</main>
 
-        <Footer />
+          <Footer />
+        </Providers>
       </body>
     </html>
   );
