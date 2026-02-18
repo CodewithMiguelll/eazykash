@@ -1,20 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 import { Sora } from "next/font/google";
 import {
   ArrowRightLeft,
   Info,
-  Wallet,
   Loader2,
   User,
   Building2,
   Hash,
-  Smartphone,
   ArrowLeft,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { usePaystackPayment } from "react-paystack";
 
 const sora = Sora({ subsets: ["latin"] });
 
@@ -29,14 +29,17 @@ const fetchRate = async () => {
 };
 
 export default function PaymentsPage() {
+  const supabase = createClient();
+  const router = useRouter();
   const [step, setStep] = useState<"calculator" | "recipient" | "review">(
     "calculator",
   );
   const [amount, setAmount] = useState("100");
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const [recipient, setRecipient] = useState({
     fullName: "",
-    bankName: "GT Bank", // Default value
+    bankName: "GT Bank",
     accountNumber: "",
     phone: "",
   });
@@ -50,6 +53,76 @@ export default function PaymentsPage() {
   const fee = 2.5;
   const numericAmount = parseFloat(amount) || 0;
   const totalToReceive = rate ? (numericAmount - fee) * rate : 0;
+
+  /* --- 1.  HANDLERS --- */
+  const onSuccess = async (reference: any) => {
+    setIsProcessing(true);
+
+    try {
+      // 1. Get the current logged-in user
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) throw new Error("No user found");
+
+      // 2. Save the data to Supabase
+      const { error } = await supabase.from("transactions").insert({
+        user_id: user.id,
+        recipient_name: recipient.fullName,
+        recipient_bank: recipient.bankName,
+        account_number: recipient.accountNumber,
+        amount_gbp: numericAmount,
+        amount_ngn: totalToReceive,
+        exchange_rate: rate,
+        paystack_ref: reference.reference,
+        status: "pending", // It's pending until you manually pay out the NGN
+      });
+
+      if (error) throw error;
+
+      // 3. Navigate to success
+      router.push(`/payments/success?ref=${reference.reference}`);
+    } catch (err) {
+      console.error("Error saving transaction:", err);
+      alert(
+        "Payment was successful but we couldn't log it. Please contact support.",
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const onClose = () => {
+    setIsProcessing(false);
+    console.log("Payment Modal Closed");
+  };
+
+
+  /* --- 2.  CONFIG  --- */
+  const config = {
+    reference: `EZK-${Date.now()}`,
+    email: "chikaimauwakwe@gmail.com",
+    amount: Math.round(numericAmount * 100),
+    publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
+    currency: "NGN",
+  };
+
+
+  /* --- 3. HOOK INITIALIZATION --- */
+  const initializePayment = usePaystackPayment(config);
+
+
+  // This function handles the logic for the button click
+  const handlePayNow = () => {
+    setIsProcessing(true);
+
+    initializePayment({
+      onSuccess,
+      onClose,
+    });
+  };
+
 
   return (
     <div className="max-w-6xl mx-auto p-6 md:p-12 font-inter">
@@ -73,11 +146,6 @@ export default function PaymentsPage() {
             {step === "recipient" && "Recipient Details"}
             {step === "review" && "Review Transfer"}
           </h1>
-          <p className="text-gray-500 mt-2">
-            {step === "calculator" && "Swift transfers to Africa."}
-            {step === "recipient" && "Who are you sending money to?"}
-            {step === "review" && "Make sure everything looks correct."}
-          </p>
         </div>
         {step !== "calculator" && (
           <button
@@ -285,26 +353,33 @@ export default function PaymentsPage() {
                       </p>
                     </div>
                     <div>
-                      <p className="text-gray-400">Delivery Method</p>
+                      <p className="text-gray-400">Delivery</p>
                       <p className="font-semibold text-gray-900">
-                        Direct Bank Deposit
+                        Direct Deposit
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <Link href="/payments/success" className="block w-full">
-                <button className="w-full py-5 bg-[#0f7a5c] text-white rounded-2xl font-bold text-xl hover:bg-[#105f49] transition-all shadow-xl flex items-center justify-center gap-3">
-                  Pay £{numericAmount.toFixed(2)} Now
-                  <ArrowRightLeft size={20} />
-                </button>
-              </Link>
+              {/* FIXED PAYSTACK BUTTON */}
+              <button
+                onClick={handlePayNow}
+                disabled={isProcessing}
+                className="w-full py-5 bg-[#0f7a5c] text-white rounded-2xl font-bold text-xl hover:bg-[#105f49] transition-all shadow-xl flex items-center justify-center gap-3 disabled:opacity-50"
+              >
+                {isProcessing ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  `Pay £${numericAmount.toFixed(2)} Now`
+                )}
+                <ArrowRightLeft size={20} />
+              </button>
             </div>
           )}
         </div>
 
-        {/* RIGHT: The Sticky Summary */}
+        {/* RIGHT: Summary */}
         <div className="lg:col-span-1">
           <div className="bg-gray-900 text-white p-8 rounded-2xl shadow-xl sticky top-24">
             <h3
