@@ -6,8 +6,8 @@ const sora = Sora({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
-    default: "Profile | EazyKash",
-    template: "%s | Profile | EazyKash",
+    default: "Profile",
+    template: "%s | EazyKash",
   },
   description: "Manage your transfers, recipients, and account settings.",
 };
