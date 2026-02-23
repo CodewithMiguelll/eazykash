@@ -8,6 +8,11 @@
     "start": "next start",
     "lint": "eslint"
   },
+  "overrides": {
+    "react-paystack": {
+      "react": "$react"
+    }
+  },
   "dependencies": {
     "@gsap/react": "^2.1.2",
     "@radix-ui/react-slot": "^1.2.4",
