@@ -99,12 +99,7 @@ const Header = () => {
                   variant="outline"
                   className="bg-[#9fd3c7] text-[#0f7a5c] hover:bg-[#52b9a1] hover:text-white"
                 >
-                  Log In
-                </Button>
-              </Link>
-              <Link href="/auth/signup">
-                <Button className="bg-[#0f7a5c] text-white hover:bg-[#105f49]">
-                  Sign Up
+                  Sign In
                 </Button>
               </Link>
             </>
@@ -151,11 +146,8 @@ const Header = () => {
               <>
                 <Link href="/login" onClick={() => setIsOpen(false)}>
                   <Button variant="outline" className="w-full py-6">
-                    Log In
+                    Sign In
                   </Button>
-                </Link>
-                <Link href="/signup" onClick={() => setIsOpen(false)}>
-                  <Button className="w-full bg-[#0f7a5c] py-6">Sign Up</Button>
                 </Link>
               </>
             )}
