@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Sora } from "next/font/google";
@@ -18,6 +18,8 @@ import { usePaystackPayment } from "react-paystack";
 
 const sora = Sora({ subsets: ["latin"] });
 
+/* --- 1. API FETCHERS (Defined outside the component) --- */
+
 const fetchRate = async () => {
   const API_KEY = process.env.NEXT_PUBLIC_EXCHANGE_API_KEY;
   const response = await fetch(
@@ -28,6 +30,18 @@ const fetchRate = async () => {
   return data.conversion_rate as number;
 };
 
+const fetchBanks = async () => {
+  // Paystack Bank API allows Public Key for listing banks
+  const response = await fetch("https://api.paystack.co/bank?currency=NGN", {
+    headers: {
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY}`,
+    },
+  });
+  if (!response.ok) throw new Error("Bank fetch failed");
+  const data = await response.json();
+  return data.data; // Returns array of { name, code, etc. }
+};
+
 export default function PaymentsPage() {
   const supabase = createClient();
   const router = useRouter();
@@ -36,37 +50,91 @@ export default function PaymentsPage() {
   );
   const [amount, setAmount] = useState("100");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verificationError, setVerificationError] = useState("");
 
+
+  
   const [recipient, setRecipient] = useState({
     fullName: "",
-    bankName: "GT Bank",
+    bankName: "",
+    bankCode: "", // Store the code for the Transfer API
     accountNumber: "",
     phone: "",
   });
 
-  const { data: rate, isLoading } = useQuery({
+  useEffect(() => {
+    const resolveAccount = async () => {
+      // Only trigger when we have 10 digits and a bank code
+      if (recipient.accountNumber.length === 10 && recipient.bankCode) {
+        setIsVerifying(true);
+        setVerificationError("");
+
+        try {
+          const res = await fetch(
+            `/api/resolve-account?accountNumber=${recipient.accountNumber}&bankCode=${recipient.bankCode}`,
+          );
+          const data = await res.json();
+
+          if (res.status === 400) {
+            setVerificationError(
+              "Account could not be found. Please check the number and bank.",
+            );
+            return;
+          }
+
+          if (data.error) {
+            setVerificationError(
+              "Could not verify account. Please check the details.",
+            );
+            setRecipient((prev) => ({ ...prev, fullName: "" }));
+          } else {
+            // Success! Update the recipient's name automatically
+            setRecipient((prev) => ({ ...prev, fullName: data.account_name }));
+          }
+        } catch (err) {
+          setVerificationError(
+            "Verification service is currently unavailable.",
+          );
+        } finally {
+          setIsVerifying(false);
+        }
+      }
+    };
+
+    resolveAccount();
+  }, [recipient.accountNumber, recipient.bankCode]);
+
+  /* --- 2. HOOKS --- */
+
+  // Exchange Rate Query
+  const { data: rate, isLoading: isLoadingRate } = useQuery({
     queryKey: ["gbp-to-ngn"],
     queryFn: fetchRate,
     staleTime: 1000 * 60 * 5,
+  });
+
+  // Banks List Query (This creates the 'banks' variable)
+  const { data: banks, isLoading: isLoadingBanks } = useQuery({
+    queryKey: ["banks-list"],
+    queryFn: fetchBanks,
+    staleTime: 1000 * 60 * 60, // Banks rarely change, cache for 1 hour
   });
 
   const fee = 2.5;
   const numericAmount = parseFloat(amount) || 0;
   const totalToReceive = rate ? (numericAmount - fee) * rate : 0;
 
-  /* --- 1.  HANDLERS --- */
+  /* --- 3. HANDLERS --- */
+
   const onSuccess = async (reference: any) => {
     setIsProcessing(true);
-
     try {
-      // 1. Get the current logged-in user
       const {
         data: { user },
       } = await supabase.auth.getUser();
-
       if (!user) throw new Error("No user found");
 
-      // 2. Save the data to Supabase
       const { error } = await supabase.from("transactions").insert({
         user_id: user.id,
         recipient_name: recipient.fullName,
@@ -76,18 +144,14 @@ export default function PaymentsPage() {
         amount_ngn: totalToReceive,
         exchange_rate: rate,
         paystack_ref: reference.reference,
-        status: "pending", // It's pending until you manually pay out the NGN
+        status: "pending",
       });
 
       if (error) throw error;
-
-      // 3. Navigate to success
       router.push(`/payments/success?ref=${reference.reference}`);
     } catch (err) {
       console.error("Error saving transaction:", err);
-      alert(
-        "Payment was successful but we couldn't log it. Please contact support.",
-      );
+      alert("Payment successful but logging failed. Contact support.");
     } finally {
       setIsProcessing(false);
     }
@@ -95,11 +159,8 @@ export default function PaymentsPage() {
 
   const onClose = () => {
     setIsProcessing(false);
-    console.log("Payment Modal Closed");
   };
 
-
-  /* --- 2.  CONFIG  --- */
   const config = {
     reference: `EZK-${Date.now()}`,
     email: "chikaimauwakwe@gmail.com",
@@ -108,21 +169,12 @@ export default function PaymentsPage() {
     currency: "NGN",
   };
 
-
-  /* --- 3. HOOK INITIALIZATION --- */
   const initializePayment = usePaystackPayment(config);
 
-
-  // This function handles the logic for the button click
   const handlePayNow = () => {
     setIsProcessing(true);
-
-    initializePayment({
-      onSuccess,
-      onClose,
-    });
+    initializePayment({ onSuccess, onClose });
   };
-
 
   return (
     <div className="max-w-6xl mx-auto p-6 md:p-12 font-inter">
@@ -140,19 +192,17 @@ export default function PaymentsPage() {
       </div>
 
       <header className="mb-10 flex items-center justify-between">
-        <div>
-          <h1 className={`${sora.className} text-3xl font-bold text-gray-900`}>
-            {step === "calculator" && "Send Money"}
-            {step === "recipient" && "Recipient Details"}
-            {step === "review" && "Review Transfer"}
-          </h1>
-        </div>
+        <h1 className={`${sora.className} text-3xl font-bold text-gray-900`}>
+          {step === "calculator" && "Send Money"}
+          {step === "recipient" && "Recipient Details"}
+          {step === "review" && "Review Transfer"}
+        </h1>
         {step !== "calculator" && (
           <button
             onClick={() =>
               setStep(step === "review" ? "recipient" : "calculator")
             }
-            className="flex items-center gap-2 text-gray-500 hover:text-[#0f7a5c] font-medium transition-colors"
+            className="flex items-center gap-2 text-gray-500 hover:text-[#0f7a5c]"
           >
             <ArrowLeft size={20} /> Back
           </button>
@@ -168,7 +218,7 @@ export default function PaymentsPage() {
                 <label className="block text-sm font-semibold text-gray-700 mb-4">
                   You Send
                 </label>
-                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border focus-within:ring-2 focus-within:ring-[#0f7a5c] transition-all">
+                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border focus-within:ring-2 focus-within:ring-[#0f7a5c]">
                   <span className="text-2xl font-bold text-gray-400">£</span>
                   <input
                     type="number"
@@ -180,20 +230,18 @@ export default function PaymentsPage() {
                     GBP
                   </div>
                 </div>
-
                 <div className="flex justify-center my-6">
                   <div className="bg-[#9fd3c7] p-2 rounded-full text-[#0f7a5c]">
                     <ArrowRightLeft size={20} />
                   </div>
                 </div>
-
                 <label className="block text-sm font-semibold text-gray-700 mb-4">
                   Recipient Receives
                 </label>
                 <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border">
                   <span className="text-2xl font-bold text-gray-400">₦</span>
                   <div className="w-full">
-                    {isLoading ? (
+                    {isLoadingRate ? (
                       <Loader2 className="animate-spin text-[#0f7a5c]" />
                     ) : (
                       <input
@@ -213,7 +261,7 @@ export default function PaymentsPage() {
               </div>
               <button
                 onClick={() => setStep("recipient")}
-                className="w-full py-4 bg-[#0f7a5c] text-white rounded-xl font-bold text-lg hover:bg-[#105f49] transition-all shadow-lg"
+                className="w-full py-4 bg-[#0f7a5c] text-white rounded-xl font-bold text-lg"
               >
                 Continue
               </button>
@@ -224,22 +272,53 @@ export default function PaymentsPage() {
           {step === "recipient" && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
               <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm space-y-6">
-                <div>
+                <div className="space-y-2">
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Recipient's Full Name
+                    Recipient's Name
                   </label>
-                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border focus-within:ring-2 focus-within:ring-[#0f7a5c] transition-all">
-                    <User size={18} className="text-gray-400" />
+
+                  {/* The Input Container */}
+                  <div
+                    className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
+                      isVerifying
+                        ? "bg-[#0f7a5c]/5 border-[#0f7a5c] ring-2 ring-[#0f7a5c]/10"
+                        : "bg-gray-50 border-gray-100"
+                    }`}
+                  >
+                    <User
+                      size={18}
+                      className={
+                        isVerifying ? "text-[#0f7a5c]" : "text-gray-400"
+                      }
+                    />
+
                     <input
                       type="text"
-                      placeholder="e.g. Chikaima Uwakwe"
-                      value={recipient.fullName}
-                      onChange={(e) =>
-                        setRecipient({ ...recipient, fullName: e.target.value })
+                      placeholder={
+                        isVerifying
+                          ? "Verifying account..."
+                          : "John Doe"
                       }
-                      className="bg-transparent w-full outline-none text-gray-900"
+                      value={recipient.fullName}
+                      readOnly // Prevents manual editing of the verified name
+                      className="bg-transparent w-full outline-none text-gray-900 font-bold placeholder:font-normal"
                     />
+
+                    {/* Show loader only while the API is working */}
+                    {isVerifying && (
+                      <Loader2
+                        size={18}
+                        className="animate-spin text-[#0f7a5c]"
+                      />
+                    )}
                   </div>
+
+                  {/* 2. CONDITIONAL ERROR MESSAGE (Still inside the parent div) */}
+                  {verificationError && (
+                    <p className="text-xs text-red-500 font-medium animate-in fade-in slide-in-from-top-1">
+                      {verificationError}
+                    </p>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -247,24 +326,34 @@ export default function PaymentsPage() {
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Select Bank
                     </label>
-                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border focus-within:ring-2 focus-within:ring-[#0f7a5c] transition-all">
+                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border">
                       <Building2 size={18} className="text-gray-400" />
                       <select
-                        value={recipient.bankName}
-                        onChange={(e) =>
+                        value={recipient.bankCode}
+                        onChange={(e) => {
+                          const selectedBank = banks?.find(
+                            (b: any) => b.code === e.target.value,
+                          );
                           setRecipient({
                             ...recipient,
-                            bankName: e.target.value,
-                          })
-                        }
+                            bankCode: e.target.value,
+                            bankName: selectedBank?.name || "",
+                          });
+                        }}
                         className="bg-transparent w-full outline-none text-gray-900 appearance-none"
                       >
-                        <option>GT Bank</option>
-                        <option>Zenith Bank</option>
-                        <option>Access Bank</option>
-                        <option>Kuda MFB</option>
-                        <option>Moniepoint</option>
-                        <option>OPAY</option>
+                        <option value="">
+                          {isLoadingBanks ? "Loading banks..." : "Select Bank"}
+                        </option>
+                        {banks?.map((bank: any) => (
+                          <option
+                            className="px-2.5"
+                            key={bank.id}
+                            value={bank.code}
+                          >
+                            {bank.name}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -272,7 +361,7 @@ export default function PaymentsPage() {
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Account Number
                     </label>
-                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border focus-within:ring-2 focus-within:ring-[#0f7a5c] transition-all">
+                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border">
                       <Hash size={18} className="text-gray-400" />
                       <input
                         type="text"
@@ -293,7 +382,7 @@ export default function PaymentsPage() {
               </div>
               <button
                 onClick={() => setStep("review")}
-                className="w-full py-4 bg-[#0f7a5c] text-white rounded-xl font-bold text-lg hover:bg-[#105f49] transition-all shadow-lg"
+                className="w-full py-4 bg-[#0f7a5c] text-white rounded-xl font-bold text-lg"
               >
                 Confirm Transfer Details
               </button>
@@ -327,7 +416,6 @@ export default function PaymentsPage() {
                     </p>
                   </div>
                 </div>
-
                 <div className="space-y-4">
                   <h4 className="font-bold text-gray-900 flex items-center gap-2">
                     <User size={18} className="text-[#0f7a5c]" />
@@ -361,12 +449,10 @@ export default function PaymentsPage() {
                   </div>
                 </div>
               </div>
-
-              {/* FIXED PAYSTACK BUTTON */}
               <button
                 onClick={handlePayNow}
                 disabled={isProcessing}
-                className="w-full py-5 bg-[#0f7a5c] text-white rounded-2xl font-bold text-xl hover:bg-[#105f49] transition-all shadow-xl flex items-center justify-center gap-3 disabled:opacity-50"
+                className="w-full py-5 bg-[#0f7a5c] text-white rounded-2xl font-bold text-xl flex items-center justify-center gap-3 disabled:opacity-50"
               >
                 {isProcessing ? (
                   <Loader2 className="animate-spin" />
