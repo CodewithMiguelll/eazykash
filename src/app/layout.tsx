@@ -39,10 +39,18 @@ export const metadata: Metadata = {
   openGraph: {
     title: "EazyKash",
     description: "The easiest way to send money to Africa.",
-    url: "https://", // Actual domain coming soon
+    url: "https://eazykash.vercel.app",
     siteName: "EazyKash",
     locale: "en_GB",
     type: "website",
+    images: [
+      {
+        url: "/assets/eazykash-og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "EazyKash",
+      },
+    ]
   },
   twitter: {
     card: "summary_large_image",
