@@ -1,5 +1,5 @@
 "use client";
-
+export const dynamic = "force-dynamic";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
@@ -51,7 +51,7 @@ export default function PaymentsPage() {
 
   // Return a loader or null while on the server
   if (!hasMounted) return null;
-  
+
   const supabase = createClient();
   const router = useRouter();
   const [step, setStep] = useState<"calculator" | "recipient" | "review">(
