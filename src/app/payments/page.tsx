@@ -1,5 +1,5 @@
 "use client";
-export const dynamic = "force-dynamic";
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
@@ -43,27 +43,17 @@ const fetchBanks = async () => {
 };
 
 export default function PaymentsPage() {
-  const [hasMounted, setHasMounted] = useState(false);
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  // Return a loader or null while on the server
-  if (!hasMounted) return null;
-
   const supabase = createClient();
   const router = useRouter();
   const [step, setStep] = useState<"calculator" | "recipient" | "review">(
     "calculator",
   );
+  const [hasMounted, setHasMounted] = useState(false);
   const [amount, setAmount] = useState("100");
   const [isProcessing, setIsProcessing] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationError, setVerificationError] = useState("");
 
-
-  
   const [recipient, setRecipient] = useState({
     fullName: "",
     bankName: "",
@@ -123,6 +113,10 @@ export default function PaymentsPage() {
     staleTime: 1000 * 60 * 5,
   });
 
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
   // Banks List Query (This creates the 'banks' variable)
   const { data: banks, isLoading: isLoadingBanks } = useQuery({
     queryKey: ["banks-list"],
@@ -169,6 +163,8 @@ export default function PaymentsPage() {
   const onClose = () => {
     setIsProcessing(false);
   };
+  // Return a loader or null while on the server
+  if (!hasMounted) return null;
 
   const config = {
     reference: `EZK-${Date.now()}`,
@@ -304,9 +300,7 @@ export default function PaymentsPage() {
                     <input
                       type="text"
                       placeholder={
-                        isVerifying
-                          ? "Verifying account..."
-                          : "John Doe"
+                        isVerifying ? "Verifying account..." : "John Doe"
                       }
                       value={recipient.fullName}
                       readOnly // Prevents manual editing of the verified name
