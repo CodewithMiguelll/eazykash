@@ -43,6 +43,15 @@ const fetchBanks = async () => {
 };
 
 export default function PaymentsPage() {
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  // Return a loader or null while on the server
+  if (!hasMounted) return null;
+  
   const supabase = createClient();
   const router = useRouter();
   const [step, setStep] = useState<"calculator" | "recipient" | "review">(
