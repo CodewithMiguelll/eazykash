@@ -22,20 +22,23 @@ const inter = Inter({
 
 /* --- METADATA & SEO --- */
 export const metadata: Metadata = {
+
+  metadataBase: new URL("https://eazykash.vercel.app"), 
+
   title: {
     default: "EazyKash | Stop Paying to Pay. Start Sending.",
     template: "%s | EazyKash",
   },
-  description:
-    "Fast, secure, and transparent payments from the UK to Africa with zero hidden fees.",
-  keywords: [
-    "Fintech",
-    "Money Transfer",
-    "UK to Africa",
-    "EazyKash",
-    "Remittance",
-  ],
+  description: "Fast, secure, and transparent payments from the UK to Africa with zero hidden fees.",
+  keywords: ["Fintech", "Money Transfer", "UK to Africa", "EazyKash", "Remittance"],
   authors: [{ name: "Chikaima Uwakwe" }],
+
+  icons: {
+    icon: "/favicon.ico", // Standard favicon
+    shortcut: "/favicon-16x16.png",
+    apple: "/apple-touch-icon.png", // For iOS Home Screen
+  },
+
   openGraph: {
     title: "EazyKash",
     description: "The easiest way to send money to Africa.",
@@ -45,17 +48,18 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/eazykash-og-image.png",
+        url: "/eazykash-og-image.png", // metadataBase will prefix this automatically
         width: 1200,
         height: 630,
-        alt: "EazyKash",
+        alt: "EazyKash - UK to Africa Remittance",
       },
     ]
   },
   twitter: {
     card: "summary_large_image",
-    title: "EazyKash",
-    description: "Finances made easy.",
+    title: "EazyKash | Finances made easy.",
+    description: "Send money to Africa with zero hidden fees.",
+    images: ["/eazykash-og-image.png"], // Explicitly define for X/Twitter
   },
 };
 
