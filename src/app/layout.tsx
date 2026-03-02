@@ -23,8 +23,6 @@ const inter = Inter({
 /* --- METADATA & SEO --- */
 export const metadata: Metadata = {
 
-  metadataBase: new URL("https://eazykash.vercel.app"), 
-
   title: {
     default: "EazyKash | Stop Paying to Pay. Start Sending.",
     template: "%s | EazyKash",
@@ -64,7 +62,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ffffff", // Match your primary brand background
+  themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
 };
