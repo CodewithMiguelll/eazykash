@@ -1,36 +1,130 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EazyKash
+
+EazyKash is a **Next.js 13** application built with the App Router that provides a simple interface for sending payments, managing recipients, and handling user profiles. Authentication and database/storage are powered by **Supabase**. The project is structured with clean components and API routes to keep the frontend and backend logic organized.
+
+---
+
+## Key Features
+
+- **Email/password authentication** via Supabase
+- **Payouts**: create transactions to external payment providers
+- **Recipient management**: save and resolve recipient accounts
+- **Profile settings**: update user-specific preferences
+- **Payments history** and success/error handling
+- Modular React components with Tailwind CSS
+- Server-side logic contained within `app/api` routes
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+ (or compatible with Next.js)
+- npm, yarn, pnpm or bun
+- Supabase project (for auth, database, storage)
+- Environment variables (see below)
+
+### Installation
+
+```bash
+# clone repository
+git clone https://github.com/CodewithMiguelll/eazykash.git
+cd eazykash
+
+# install dependencies
+npm install
+# or yarn install
+# or pnpm install
+```
+
+### Environment Variables
+
+Copy the example and fill with your credentials:
+
+```bash
+cp .env.example .env.local
+```
+
+You will need:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY` (server only)
+- any other API keys for your payment provider
+
+### Development
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Building & Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+Or deploy using Vercel, Netlify, or any Next.js-compatible platform.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```text
+src/
+  app/                 # Next.js App Router pages & layouts
+    api/
+      payout/route.ts  # handles payout creation
+      resolve-account/route.ts # resolves recipient account info
+    auth/              # login UI & callback
+    payments/          # payment pages & layouts
+    profile/           # user profile and settings
+    about/             # informational pages
+  components/          # reusable React components
+  lib/                 # shared helpers (e.g. utils.ts)
+  utils/supabase       # client/server wrappers
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Authentication
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Auth is managed using Supabase's built-in OAuth/Email flows in `src/utils/supabase/client.ts` and `server.ts`. The login page triggers a redirect to the Supabase auth endpoint, and `auth/callback/route.ts` processes the returned session.
+
+---
+
+## API Routes
+
+- `POST /api/payout` → create a new payout
+- `GET/POST /api/resolve-account` → lookup recipient info
+
+Server routes validate requests, interact with external payment providers, and insert records into Supabase.
+
+---
+
+## Development Tips
+
+- Use `CountUp` component for animated numbers
+- The `payment-form.tsx` component is the main form used on the payments page
+- `profile-sidebar.tsx` contains navigation for profile subpages
+- Tailwind CSS classes are used throughout; adjust in `globals.css` or `postcss.config.mjs`
+
+---
+
+> **Note:** EazyKash is not an open source project. Contributions are not being accepted at this time. The repository is intended for internal use only.
+
+---
+
+## License
+
+This repository is private and not distributed under an open source license. Refer to internal documentation or contact the project owner for licensing information.
+
+---
+
+Happy coding! 
