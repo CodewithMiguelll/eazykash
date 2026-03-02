@@ -34,9 +34,9 @@ export const metadata: Metadata = {
   authors: [{ name: "Chikaima Uwakwe" }],
 
   icons: {
-    icon: "/favicon.ico", // Standard favicon
+    icon: "/favicon.ico",
     shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png", // For iOS Home Screen
+    apple: "/apple-touch-icon.png",
   },
 
   openGraph: {
