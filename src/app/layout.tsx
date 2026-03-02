@@ -33,7 +33,6 @@ export const metadata: Metadata = {
 
   icons: {
     icon: "/favicon.ico",
-    shortcut: "/favicon-16x16.png",
     apple: "/apple-touch-icon.png",
   },
 
@@ -46,7 +45,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/eazykash-og-image.png", // metadataBase will prefix this automatically
+        url: "/eazykash-og-image.png",
         width: 1200,
         height: 630,
         alt: "EazyKash - UK to Africa Remittance",
